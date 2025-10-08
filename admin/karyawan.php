@@ -122,7 +122,7 @@ $result = mysqli_query($koneksi, $query);
 <div class="bg-white p-6 rounded-lg shadow-md">
     <h2 class="text-xl font-bold mb-4">Daftar Karyawan</h2>
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500">
+        <table class="w-full text-sm text-left text-gray-500" id="karyawanTable">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th class="py-3 px-6">Username</th>

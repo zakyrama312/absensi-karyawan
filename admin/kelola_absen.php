@@ -77,43 +77,43 @@ $result = mysqli_query($koneksi, $query);
 ?>
 
 <?php if ($pesan): ?>
-    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-        <p><?php echo $pesan; ?></p>
-    </div>
+<div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+    <p><?php echo $pesan; ?></p>
+</div>
 <?php endif; ?>
 <?php if ($error): ?>
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-        <p><?php echo $error; ?></p>
-    </div>
+<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+    <p><?php echo $error; ?></p>
+</div>
 <?php endif; ?>
 
 <?php if ($edit_data): ?>
-    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 class="text-xl font-bold mb-4">Edit Absensi: <?php echo htmlspecialchars($edit_data['nama']); ?>
-            (<?php echo date('d M Y', strtotime($edit_data['tanggal'])); ?>)</h2>
-        <form method="POST" action="kelola_absen.php">
-            <input type="hidden" name="id" value="<?php echo $edit_data['id']; ?>">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="jam_masuk" class="block text-sm font-medium text-gray-700">Jam Masuk</label>
-                    <input type="text" name="jam_masuk" id="jam_masuk" value="<?php echo $edit_data['jam_masuk'] ?? ''; ?>"
-                        class="mt-1 border p-2 block w-full rounded-md border-gray-300 shadow-sm" placeholder="HH:MM:SS">
-                </div>
-                <div>
-                    <label for="jam_keluar" class="block text-sm font-medium text-gray-700">Jam Keluar</label>
-                    <input type="text" name="jam_keluar" id="jam_keluar"
-                        value="<?php echo $edit_data['jam_keluar'] ?? ''; ?>"
-                        class="mt-1 border p-2 block w-full rounded-md border-gray-300 shadow-sm" placeholder="HH:MM:SS">
-                </div>
+<div class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <h2 class="text-xl font-bold mb-4">Edit Absensi: <?php echo htmlspecialchars($edit_data['nama']); ?>
+        (<?php echo date('d M Y', strtotime($edit_data['tanggal'])); ?>)</h2>
+    <form method="POST" action="kelola_absen.php">
+        <input type="hidden" name="id" value="<?php echo $edit_data['id']; ?>">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="jam_masuk" class="block text-sm font-medium text-gray-700">Jam Masuk</label>
+                <input type="text" name="jam_masuk" id="jam_masuk" value="<?php echo $edit_data['jam_masuk'] ?? ''; ?>"
+                    class="mt-1 border p-2 block w-full rounded-md border-gray-300 shadow-sm" placeholder="HH:MM:SS">
             </div>
-            <div class="flex justify-end mt-4">
-                <a href="kelola_absen.php"
-                    class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 mr-2">Batal</a>
-                <button type="submit" name="simpan"
-                    class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Simpan Perubahan</button>
+            <div>
+                <label for="jam_keluar" class="block text-sm font-medium text-gray-700">Jam Keluar</label>
+                <input type="text" name="jam_keluar" id="jam_keluar"
+                    value="<?php echo $edit_data['jam_keluar'] ?? ''; ?>"
+                    class="mt-1 border p-2 block w-full rounded-md border-gray-300 shadow-sm" placeholder="HH:MM:SS">
             </div>
-        </form>
-    </div>
+        </div>
+        <div class="flex justify-end mt-4">
+            <a href="kelola_absen.php"
+                class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 mr-2">Batal</a>
+            <button type="submit" name="simpan"
+                class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Simpan Perubahan</button>
+        </div>
+    </form>
+</div>
 <?php endif; ?>
 
 <div class="bg-white p-6 rounded-lg shadow-md">
@@ -146,7 +146,7 @@ $result = mysqli_query($koneksi, $query);
         </div>
     </form>
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500">
+        <table class="w-full text-sm text-left text-gray-500" id="absenTable">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th class="py-3 px-6">Nama Karyawan</th>
@@ -158,24 +158,24 @@ $result = mysqli_query($koneksi, $query);
             </thead>
             <tbody>
                 <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                    <tr class="bg-white border-b">
-                        <td class="py-4 px-6 font-medium text-gray-900"><?php echo htmlspecialchars($row['nama']); ?></td>
-                        <td class="py-4 px-6"><?php echo date('d M Y', strtotime($row['tanggal'])); ?></td>
-                        <td class="py-4 px-6"><?php echo $row['jam_masuk'] ?? '-'; ?></td>
-                        <td class="py-4 px-6"><?php echo $row['jam_keluar'] ?? '-'; ?></td>
-                        <td class="py-4 px-6 flex space-x-2">
-                            <a href="kelola_absen.php?edit=<?php echo $row['id']; ?>"
-                                class="text-blue-600 hover:text-blue-900"><i class="fas fa-edit"></i></a>
-                            <a href="kelola_absen.php?hapus=<?php echo $row['id']; ?>"
-                                onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')"
-                                class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></a>
-                        </td>
-                    </tr>
+                <tr class="bg-white border-b">
+                    <td class="py-4 px-6 font-medium text-gray-900"><?php echo htmlspecialchars($row['nama']); ?></td>
+                    <td class="py-4 px-6"><?php echo date('d M Y', strtotime($row['tanggal'])); ?></td>
+                    <td class="py-4 px-6"><?php echo $row['jam_masuk'] ?? '-'; ?></td>
+                    <td class="py-4 px-6"><?php echo $row['jam_keluar'] ?? '-'; ?></td>
+                    <td class="py-4 px-6 flex space-x-2">
+                        <a href="kelola_absen.php?edit=<?php echo $row['id']; ?>"
+                            class="text-blue-600 hover:text-blue-900"><i class="fas fa-edit"></i></a>
+                        <a href="kelola_absen.php?hapus=<?php echo $row['id']; ?>"
+                            onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')"
+                            class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
                 <?php } ?>
                 <?php if (mysqli_num_rows($result) == 0): ?>
-                    <tr class="bg-white border-b">
-                        <td colspan="5" class="py-4 px-6 text-center text-gray-500">Tidak ada data untuk ditampilkan.</td>
-                    </tr>
+                <tr class="bg-white border-b">
+                    <td colspan="5" class="py-4 px-6 text-center text-gray-500">Tidak ada data untuk ditampilkan.</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
         </table>

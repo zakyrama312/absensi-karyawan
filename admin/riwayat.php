@@ -58,7 +58,7 @@ $result = mysqli_query($koneksi, $query);
         </div>
     </form>
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500">
+        <table class="w-full text-sm text-left text-gray-500" id="riwayatTable">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th class="py-3 px-6">Username</th>
@@ -82,10 +82,11 @@ $result = mysqli_query($koneksi, $query);
                     <tr class="bg-white border-b">
                         <td class="py-4 px-6"><?php echo htmlspecialchars($row['username']); ?></td>
                         <td class="py-4 px-6 font-medium text-gray-900"><?php echo htmlspecialchars($row['nama']); ?></td>
-                        <td class="py-4 px-6"><?php echo date('d M Y', strtotime($row['tanggal'])); ?></td>
-                        <td class="py-4 px-6"><?php echo $row['jam_masuk']; ?></td>
-                        <td class="py-4 px-6"><?php echo $row['jam_keluar'] ?? '-'; ?></td>
-                        <td class="py-4 px-6 font-bold"><?php echo $total_jam_kerja; ?></td>
+                        <td class="py-4 px-6 font-medium text-gray-900">
+                            <?php echo date('d M Y', strtotime($row['tanggal'])); ?></td>
+                        <td class="py-4 px-6 font-medium text-gray-900"><?php echo $row['jam_masuk']; ?></td>
+                        <td class="py-4 px-6 font-medium text-gray-900"><?php echo $row['jam_keluar'] ?? '-'; ?></td>
+                        <td class="py-4 px-6 font-medium text-gray-900 font-bold"><?php echo $total_jam_kerja; ?></td>
                     </tr>
                 <?php } ?>
                 <?php if (mysqli_num_rows($result) == 0): ?>
