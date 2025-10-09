@@ -120,6 +120,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="text-center mt-4">
             <a href="admin/" class="text-sm text-indigo-600 hover:text-indigo-500">Login sebagai Admin</a>
         </div>
+        <!-- TAMBAHKAN BAGIAN INI -->
+        <div class="text-center mt-4">
+            <a href="login_karyawan.php" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                Sudah punya akun? Login untuk lihat riwayat absensi Anda
+            </a>
+        </div>
     </div>
 
     <script>
