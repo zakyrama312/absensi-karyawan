@@ -6,7 +6,7 @@ date_default_timezone_set('Asia/Jakarta');
 $host = 'localhost'; // atau sesuaikan dengan host Anda
 $user = 'root';      // atau sesuaikan dengan username database Anda
 $pass = '';          // atau sesuaikan dengan password database Anda
-$db   = 'absensi'; // nama database yang Anda buat
+$db   = 'absensi_penggajian'; // nama database yang Anda buat
 
 $koneksi = mysqli_connect($host, $user, $pass, $db);
 

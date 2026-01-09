@@ -9,54 +9,84 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = sanitize($koneksi, $_POST['password']);
     $tipe = sanitize($koneksi, $_POST['tipe']);
 
-    // Cek username dan password karyawan
-    $query_karyawan = "SELECT id, nama FROM karyawan WHERE username = '$username'";
+    // 1. Ambil data karyawan & Password
+    $query_karyawan = "SELECT id, nama, password FROM karyawan WHERE username = '$username'";
     $result_karyawan = mysqli_query($koneksi, $query_karyawan);
 
     if (mysqli_num_rows($result_karyawan) > 0) {
-        // NOTE: Untuk kemudahan, kita tidak melakukan verifikasi password di sini.
-        // Dalam aplikasi nyata, Anda HARUS memverifikasi password yang di-hash.
-        // Contoh: if(password_verify($password, $hash_dari_db)) { ... }
-
         $karyawan = mysqli_fetch_assoc($result_karyawan);
-        $id_karyawan = $karyawan['id'];
-        $nama_karyawan = $karyawan['nama'];
-        $tanggal = date('Y-m-d');
-        $jam = date('H:i:s');
 
-        // Cek apakah sudah absen masuk hari ini
-        $query_cek_absen = "SELECT * FROM absensi WHERE id_karyawan = '$id_karyawan' AND tanggal = '$tanggal'";
-        $result_cek_absen = mysqli_query($koneksi, $query_cek_absen);
-        $data_absen_hari_ini = mysqli_fetch_assoc($result_cek_absen);
+        // 2. Verifikasi Password (Gunakan password_verify karena di karyawan.php kita pakai hash)
+        if (password_verify($password, $karyawan['password'])) {
+            $id_karyawan = $karyawan['id'];
+            $nama_karyawan = $karyawan['nama'];
+            $tanggal = date('Y-m-d');
+            $jam_sekarang = date('H:i:s');
 
-        if ($tipe == 'masuk') {
-            if ($data_absen_hari_ini) {
-                $error = "Anda sudah melakukan absen masuk hari ini.";
+            // 3. CEK JADWAL KERJA HARI INI
+            // Kita join dengan tabel shifts untuk tahu jam masuk/pulang
+            $sql_jadwal = "SELECT jk.id as id_jadwal, s.nama_shift, s.jam_masuk, s.jam_keluar 
+                           FROM jadwal_kerja jk
+                           JOIN shifts s ON jk.id_shift = s.id
+                           WHERE jk.id_karyawan = '$id_karyawan' AND jk.tanggal = '$tanggal'";
+            $res_jadwal = mysqli_query($koneksi, $sql_jadwal);
+            $data_jadwal = mysqli_fetch_assoc($res_jadwal);
+
+            if (!$data_jadwal) {
+                $error = "Maaf, Anda tidak memiliki jadwal kerja hari ini.";
+            } elseif ($data_jadwal['nama_shift'] == 'OFF') {
+                $error = "Hari ini jadwal Anda adalah OFF (Libur).";
             } else {
-                $query_insert = "INSERT INTO absensi (id_karyawan, tanggal, jam_masuk, status) VALUES ('$id_karyawan', '$tanggal', '$jam', 'masuk')";
-                if (mysqli_query($koneksi, $query_insert)) {
-                    $pesan = "Terima kasih, $nama_karyawan. Absen masuk berhasil pada jam $jam.";
-                } else {
-                    $error = "Gagal melakukan absen masuk.";
+                // Jika ada jadwal dan tidak OFF, lanjut cek absensi
+                $id_jadwal = $data_jadwal['id_jadwal'];
+
+                // Cek apakah sudah absen masuk hari ini
+                $query_cek_absen = "SELECT * FROM absensi WHERE id_karyawan = '$id_karyawan' AND tanggal = '$tanggal'";
+                $result_cek_absen = mysqli_query($koneksi, $query_cek_absen);
+                $data_absen_hari_ini = mysqli_fetch_assoc($result_cek_absen);
+
+                if ($tipe == 'masuk') {
+                    if ($data_absen_hari_ini) {
+                        $error = "Anda sudah melakukan absen masuk hari ini.";
+                    } else {
+                        // Opsional: Beri toleransi absen masuk (misal: 1 jam sebelum shift dimulai)
+                        // Jika ingin sangat ketat, tambahkan logika perbandingan jam di sini.
+                        $jam_keluar_shift = $data_jadwal['jam_keluar']; // Jam 15:00:00
+
+                        // Jika jam sekarang sudah melewati jam keluar shift, tolak absen masuk
+                        if ($jam_sekarang > $jam_keluar_shift) {
+                            $error = "Gagal! Jam kerja Shift {$data_jadwal['nama_shift']} sudah berakhir.";
+                        } else {
+                            $query_insert = "INSERT INTO absensi (id_karyawan, id_jadwal, tanggal, jam_masuk, status) 
+                                         VALUES ('$id_karyawan', '$id_jadwal', '$tanggal', '$jam_sekarang', 'masuk')";
+                            if (mysqli_query($koneksi, $query_insert)) {
+                                $pesan = "Halo $nama_karyawan, Absen MASUK berhasil (Shift: {$data_jadwal['nama_shift']})";
+                            } else {
+                                $error = "Gagal menyimpan data absen.";
+                            }
+                        }
+                    }
+                } elseif ($tipe == 'keluar') {
+                    if (!$data_absen_hari_ini) {
+                        $error = "Anda belum melakukan absen masuk hari ini.";
+                    } elseif ($data_absen_hari_ini['jam_keluar'] != NULL) {
+                        $error = "Anda sudah melakukan absen keluar hari ini.";
+                    } else {
+                        $id_absensi = $data_absen_hari_ini['id'];
+                        $query_update = "UPDATE absensi SET jam_keluar = '$jam_sekarang', status = 'keluar' WHERE id = '$id_absensi'";
+                        if (mysqli_query($koneksi, $query_update)) {
+                            $pesan = "Terima kasih $nama_karyawan, Absen KELUAR berhasil.";
+                        } else {
+                            $error = "Gagal melakukan absen keluar.";
+                        }
+                    }
                 }
             }
-        } elseif ($tipe == 'keluar') {
-            if (!$data_absen_hari_ini) {
-                $error = "Anda belum melakukan absen masuk hari ini.";
-            } elseif ($data_absen_hari_ini['jam_keluar'] != NULL) {
-                $error = "Anda sudah melakukan absen keluar hari ini.";
-            } else {
-                $id_absensi = $data_absen_hari_ini['id'];
-                $query_update = "UPDATE absensi SET jam_keluar = '$jam', status = 'keluar' WHERE id = '$id_absensi'";
-                if (mysqli_query($koneksi, $query_update)) {
-                    $pesan = "Terima kasih, $nama_karyawan. Absen keluar berhasil pada jam $jam.";
-                } else {
-                    $error = "Gagal melakukan absen keluar.";
-                }
-            }
+        } else {
+            $error = "Password yang Anda masukkan salah.";
         }
     } else {
-        $error = "username atau Password salah.";
+        $error = "Username tidak ditemukan.";
     }
 }
 ?>
