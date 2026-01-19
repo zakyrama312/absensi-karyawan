@@ -54,17 +54,17 @@ mysqli_stmt_close($stmt);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
 
-        .dataTables_wrapper .dataTables_filter input {
-            @apply border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus: ring-2 focus:ring-indigo-500 transition-all mb-4;
-        }
+    .dataTables_wrapper .dataTables_filter input {
+        @apply border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus: ring-2 focus:ring-indigo-500 transition-all mb-4;
+    }
 
-        table.dataTable.no-footer {
-            border-bottom: none !important;
-        }
+    table.dataTable.no-footer {
+        border-bottom: none !important;
+    }
     </style>
 </head>
 
@@ -83,10 +83,16 @@ mysqli_stmt_close($stmt);
                         kehadiranmu di sini.</p>
                 </div>
             </div>
-            <a href="logout_karyawan.php"
-                class="bg-rose-50 text-rose-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-rose-600 hover:text-white transition-all shadow-sm border border-rose-100 flex items-center gap-2">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+            <div class="flex gap-2">
+                <a href="riwayat_gaji.php"
+                    class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 flex items-center gap-2">
+                    <i class="fas fa-file-invoice-dollar"></i> Lihat Gaji
+                </a>
+                <a href="logout_karyawan.php"
+                    class="bg-rose-50 text-rose-600 px-4 py-2.5 rounded-xl font-bold text-sm hover:bg-rose-600 hover:text-white transition-all border border-rose-100">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
@@ -104,45 +110,45 @@ mysqli_stmt_close($stmt);
                         </thead>
                         <tbody>
                             <?php foreach ($riwayat as $data): ?>
-                                <tr class="group hover:bg-slate-50 transition-all duration-200 shadow-sm">
-                                    <td class="py-5 px-4 bg-white border-y border-l border-slate-50 rounded-l-2xl">
-                                        <div class="font-bold text-slate-700">
-                                            <?= formatTanggalIndonesia($data['tanggal']); ?></div>
-                                    </td>
+                            <tr class="group hover:bg-slate-50 transition-all duration-200 shadow-sm">
+                                <td class="py-5 px-4 bg-white border-y border-l border-slate-50 rounded-l-2xl">
+                                    <div class="font-bold text-slate-700">
+                                        <?= formatTanggalIndonesia($data['tanggal']); ?></div>
+                                </td>
 
-                                    <td class="py-5 px-4 bg-white border-y border-slate-50 ">
-                                        <?php if ($data['id_shift'] == 3 || empty($data['nama_shift'])) : ?>
-                                            <span
-                                                class="bg-rose-50 text-rose-600 text-[10px] font-bold px-3 py-1 rounded-lg border border-rose-100 uppercase tracking-tighter">
-                                                <i class="fas fa-mug-hot mr-1"></i> OFF / Libur
-                                            </span>
-                                        <?php else : ?>
-                                            <span
-                                                class="bg-indigo-50 text-indigo-600 text-[10px] font-bold px-3 py-1 rounded-lg border border-indigo-100 uppercase tracking-tighter">
-                                                <?= $data['nama_shift']; ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </td>
+                                <td class="py-5 px-4 bg-white border-y border-slate-50 ">
+                                    <?php if ($data['id_shift'] == 3 || empty($data['nama_shift'])) : ?>
+                                    <span
+                                        class="bg-rose-50 text-rose-600 text-[10px] font-bold px-3 py-1 rounded-lg border border-rose-100 uppercase tracking-tighter">
+                                        <i class="fas fa-mug-hot mr-1"></i> OFF / Libur
+                                    </span>
+                                    <?php else : ?>
+                                    <span
+                                        class="bg-indigo-50 text-indigo-600 text-[10px] font-bold px-3 py-1 rounded-lg border border-indigo-100 uppercase tracking-tighter">
+                                        <?= $data['nama_shift']; ?>
+                                    </span>
+                                    <?php endif; ?>
+                                </td>
 
-                                    <td class="py-5 px-4 bg-white border-y border-slate-50 ">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 font-mono font-bold text-xs border border-emerald-100">
-                                            <i class="fas fa-sign-in-alt text-[10px]"></i>
-                                            <?= $data['jam_masuk'] ? date('H:i', strtotime($data['jam_masuk'])) : '--:--'; ?>
-                                        </span>
-                                    </td>
+                                <td class="py-5 px-4 bg-white border-y border-slate-50 ">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 font-mono font-bold text-xs border border-emerald-100">
+                                        <i class="fas fa-sign-in-alt text-[10px]"></i>
+                                        <?= $data['jam_masuk'] ? date('H:i', strtotime($data['jam_masuk'])) : '--:--'; ?>
+                                    </span>
+                                </td>
 
-                                    <td class="py-5 px-4 bg-white border-y border-slate-50 ">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg <?= $data['jam_keluar'] ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-300 border-slate-100' ?> font-mono font-bold text-xs border">
-                                            <i class="fas fa-sign-out-alt text-[10px]"></i>
-                                            <?= $data['jam_keluar'] ? date('H:i', strtotime($data['jam_keluar'])) : '--:--'; ?>
-                                        </span>
-                                    </td>
+                                <td class="py-5 px-4 bg-white border-y border-slate-50 ">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg <?= $data['jam_keluar'] ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-300 border-slate-100' ?> font-mono font-bold text-xs border">
+                                        <i class="fas fa-sign-out-alt text-[10px]"></i>
+                                        <?= $data['jam_keluar'] ? date('H:i', strtotime($data['jam_keluar'])) : '--:--'; ?>
+                                    </span>
+                                </td>
 
-                                    <td class="py-5 px-4 bg-white border-y border-r border-slate-50 rounded-r-2xl">
-                                        <div class="text-xs font-black text-slate-600 italic">
-                                            <?php
+                                <td class="py-5 px-4 bg-white border-y border-r border-slate-50 rounded-r-2xl">
+                                    <div class="text-xs font-black text-slate-600 italic">
+                                        <?php
                                             if ($data['jam_masuk'] && $data['jam_keluar']) {
                                                 $masuk = new DateTime($data['jam_masuk']);
                                                 $keluar = new DateTime($data['jam_keluar']);
@@ -152,9 +158,9 @@ mysqli_stmt_close($stmt);
                                                 echo '<span class="text-slate-300 font-medium">--</span>';
                                             }
                                             ?>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </td>
+                            </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -162,30 +168,30 @@ mysqli_stmt_close($stmt);
             </div>
         </div>
 
-        <p class="text-center mt-8 text-xs text-slate-400 font-medium tracking-wide uppercase">
+        <!-- <p class="text-center mt-8 text-xs text-slate-400 font-medium tracking-wide uppercase">
             &copy; 2026 Ventera • SMK Negeri 1 Slawi
-        </p>
+        </p> -->
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#riwayatTable').DataTable({
-                responsive: true,
-                pageLength: 10,
-                language: {
-                    search: "_INPUT_",
-                    searchPlaceholder: "Cari tanggal...",
-                    lengthMenu: "Tampilkan _MENU_ data",
-                    info: "Menampilkan _START_ sampai _END_",
-                    paginate: {
-                        next: '<i class="fas fa-chevron-right"></i>',
-                        previous: '<i class="fas fa-chevron-left"></i>'
-                    }
+    $(document).ready(function() {
+        $('#riwayatTable').DataTable({
+            responsive: true,
+            pageLength: 10,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Cari tanggal...",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_",
+                paginate: {
+                    next: '<i class="fas fa-chevron-right"></i>',
+                    previous: '<i class="fas fa-chevron-left"></i>'
                 }
-            });
+            }
         });
+    });
     </script>
 </body>
 
